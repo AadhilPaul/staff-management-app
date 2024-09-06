@@ -1,0 +1,43 @@
+:root {
+    --green: #5bc236;
+    --hover-green: #4a9e1a;
+}
+
+
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f2f5; /* Example background color */
+}
+
+
+.welcomeText {
+    margin-bottom: 2rem;
+    display: block;
+}
+
+.google {
+    width: 100%;
+}
+
+.card {
+    background-color: #fff;
+    width: 100%;
+    max-width: 40rem;
+    padding: 25px;
+}
+
+.submit {
+    /* background-color: var(--green);
+    border-color: var(--green);
+    color: white; */
+    margin-top: 2rem;
+}
+/* .submit:hover,
+.submit:focus {
+  background-color:var(--hover-green) !important;
+  border-color: var(--hover-green) !important;
+} */

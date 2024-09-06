@@ -1,0 +1,26 @@
+:root {
+  --green: #5bc236;
+  --hover-green: #4a9e1a;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f2f5; /* Example background color */
+}
+.card {
+  background-color: #fff;
+  width: 100%;
+  max-width: 75rem;
+  padding: 25px;
+}
+.imgStyle {
+  display: block;
+  width: 50%;
+}
+
+.submit {
+  margin-top: 2rem;
+}
