@@ -48,7 +48,6 @@ const LoginPage: React.FC = () => {
         </Divider>
         <Form
           layout="vertical"
-          initialValues={{ remember: true }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"

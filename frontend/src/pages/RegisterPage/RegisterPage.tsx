@@ -11,27 +11,53 @@ import {
   Input,
 } from "antd";
 import { Link as RouterLink } from "react-router-dom";
-import type { FormProps } from "antd";
-import image1 from "../../assets/1.png";
-import { UserAddOutlined, } from "@ant-design/icons";
+import image1 from "../../assets/register_cover.png";
+import { UserAddOutlined } from "@ant-design/icons";
+import loadForbiddenPasswords from "../../utils/validation";
+import { RuleObject } from "antd/es/form";
 
 const { Title, Text, Link } = Typography;
 
-type FieldType = {
+interface FormValues {
   username?: string;
   email?: string;
   password?: string;
-};
-
-const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-  console.log("Success", values);
-};
-
-const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (values) => {
-  console.log("Success", values);
-};
+  confirm_password?: string;
+}
 
 const RegisterPage: React.FC = () => {
+  const [form] = Form.useForm<FormValues>();
+
+  const usernameValidationRegex = /^[\w.@+-]+$/;
+  const passwordValidationRegex = /^(?=.*\d).+$/;
+
+  const validatePassword = async (_: RuleObject, value: string) => {
+    const forbiddenPasswords = await loadForbiddenPasswords();
+
+    if (forbiddenPasswords.includes(value.toLowerCase())) {
+      return Promise.reject(new Error("Password is too common"));
+    }
+
+    return Promise.resolve();
+  };
+
+  const confirmPasswordValidator = (_: RuleObject, value: string) => {
+    const password = form.getFieldValue("password");
+
+    if (value && value !== password) {
+      return Promise.reject(new Error("Passwords do not match"));
+    }
+    return Promise.resolve();
+  };
+
+  const onFinish = (values: FormValues) => {
+    console.log("Success", values);
+  };
+
+  const onFinishFailed = (errorInfo: any) => {
+    console.log("Failed", errorInfo);
+  };
+
   return (
     <div className={styles.container}>
       <Card
@@ -40,54 +66,85 @@ const RegisterPage: React.FC = () => {
       >
         <Flex justify="space-between">
           <img alt="avatar" src={image1} className={styles.imgStyle} />
-          <Flex vertical style={{ padding: 32, width: "50%" }}>
+          <Flex vertical className={styles.form}>
             <Title level={3}>Register Yout Account</Title>
             <Text className={styles.welcomeText}>
               Let's get you set up and ready to go🚀
             </Text>
             <Divider />
             <Form
+              form={form}
               layout="vertical"
               initialValues={{ remember: true }}
               onFinish={onFinish}
               onFinishFailed={onFinishFailed}
               autoComplete="off"
             >
-              <Form.Item<FieldType>
+              <Form.Item
                 label="Username: "
                 required
                 name="username"
                 rules={[
-                  { message: "Please input your username!", type: "string" },
+                  { message: "Please input your username!", required: true },
+                  {
+                    min: 1,
+                    message: "Username should be at least one character long",
+                  },
+                  {
+                    max: 150,
+                    message: "Username should not exceed 150 characters",
+                  },
+                  {
+                    pattern: usernameValidationRegex,
+                    message: "Enter a valid username",
+                  },
                 ]}
               >
                 <Input variant="filled" placeholder="chubbycheeks609 etc..." />
               </Form.Item>
-              <Form.Item<FieldType>
+              <Form.Item
                 label="Email: "
                 required
                 name="email"
-                rules={[{ message: "Please input your email!", type: "email" }]}
+                rules={[
+                  { message: "Enter a valid email", type: "email" },
+                  { message: "Please input ur email!", required: true },
+                ]}
               >
                 <Input variant="filled" placeholder="your@email.com" />
               </Form.Item>
 
-              <Form.Item<FieldType>
+              <Form.Item
                 label="Password: "
                 name="password"
                 required
-                rules={[{ message: "Please input your password!" }]}
+                rules={[
+                  { message: "Please input your password!", required: true },
+                  {
+                    min: 8,
+                    message: "Password should be at least 8 characters long",
+                  },
+                  {
+                    pattern: passwordValidationRegex,
+                    message:
+                      "Password should have at least one numeric character",
+                  },
+                  { validator: validatePassword },
+                ]}
               >
                 <Input.Password
                   variant="filled"
                   placeholder="Enter your password"
                 />
               </Form.Item>
-              <Form.Item<FieldType>
+              <Form.Item
                 label="Confirm Password: "
-                name="password"
+                name="confrm_password"
                 required
-                rules={[{ message: "Please input your password!" }]}
+                rules={[
+                  { message: "Please confirm your password!", required: true },
+                  { validator: confirmPasswordValidator },
+                ]}
               >
                 <Input.Password
                   variant="filled"
@@ -115,7 +172,6 @@ const RegisterPage: React.FC = () => {
               <Text color="secondary">
                 Already have an account?{" "}
                 <Link>
-                  {" "}
                   <RouterLink to="/login">Login Here</RouterLink>
                 </Link>
               </Text>

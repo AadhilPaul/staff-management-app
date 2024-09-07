@@ -10,6 +10,12 @@
   height: 100vh;
   background-color: #f0f2f5; /* Example background color */
 }
+
+.form {
+  padding: 32px;
+  width: 50%;
+}
+
 .card {
   background-color: #fff;
   width: 100%;
