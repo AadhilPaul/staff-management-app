@@ -13,7 +13,7 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 import image1 from "../../assets/register_cover.png";
 import { UserAddOutlined } from "@ant-design/icons";
-import loadForbiddenPasswords from "../../utils/validation";
+import {loadForbiddenPasswords, calculateSimilarity} from "../../utils/validation";
 import { RuleObject } from "antd/es/form";
 
 const { Title, Text, Link } = Typography;
@@ -36,6 +36,31 @@ const RegisterPage: React.FC = () => {
 
     if (forbiddenPasswords.includes(value.toLowerCase())) {
       return Promise.reject(new Error("Password is too common"));
+    }
+
+    return Promise.resolve();
+  };
+
+  // Function to check if the password is too similar to any user attributes
+  const calculateFieldSimilarity = (_: RuleObject, value: string) => {
+    const username = form.getFieldValue("username") || "";
+    const email = form.getFieldValue("email") || "";
+
+    const usernameSimilarityRatio = calculateSimilarity(username, value);
+    const emailSimilarityRatio = calculateSimilarity(email, value);
+
+    // Determine dynamic thresholds based on attribute lengths
+    const similarityThresholdRatio = 0.7;
+
+    // Check if similarity ratios exceed their respective thresholds
+    if (usernameSimilarityRatio >= similarityThresholdRatio) {
+      return Promise.reject(
+        new Error("Your password is too similar to your username")
+      );
+    } else if (emailSimilarityRatio >= similarityThresholdRatio) {
+      return Promise.reject(
+        new Error("Your password is too similar to your email address")
+      );
     }
 
     return Promise.resolve();
@@ -130,6 +155,7 @@ const RegisterPage: React.FC = () => {
                       "Password should have at least one numeric character",
                   },
                   { validator: validatePassword },
+                  { validator: calculateFieldSimilarity },
                 ]}
               >
                 <Input.Password
