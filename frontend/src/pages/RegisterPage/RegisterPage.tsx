@@ -4,16 +4,22 @@ import {
   Card,
   Button,
   Divider,
+  Alert,
   Typography,
   Flex,
   Form,
   Checkbox,
   Input,
+  message,
 } from "antd";
+import axios from "axios";
 import { Link as RouterLink } from "react-router-dom";
 import image1 from "../../assets/register_cover.png";
 import { UserAddOutlined } from "@ant-design/icons";
-import {loadForbiddenPasswords, calculateSimilarity} from "../../utils/validation";
+import {
+  loadForbiddenPasswords,
+  calculateSimilarity,
+} from "../../utils/validation";
 import { RuleObject } from "antd/es/form";
 
 const { Title, Text, Link } = Typography;
@@ -27,6 +33,10 @@ interface FormValues {
 
 const RegisterPage: React.FC = () => {
   const [form] = Form.useForm<FormValues>();
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [alertType, setAlertType] = React.useState<"username" | "email" | null>(
+    null
+  );
 
   const usernameValidationRegex = /^[\w.@+-]+$/;
   const passwordValidationRegex = /^(?=.*\d).+$/;
@@ -75,8 +85,41 @@ const RegisterPage: React.FC = () => {
     return Promise.resolve();
   };
 
-  const onFinish = (values: FormValues) => {
-    console.log("Success", values);
+  const onFinish = async (values: FormValues) => {
+    console.log(values.confirm_password);
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/auth/users/", {
+        username: values.username,
+        email: values.email,
+        password: values.password,
+        re_password: values.confirm_password,
+      });
+      console.log("Response Data: ", response.data);
+      setErrorMessage(null); // Reset error if successful
+    } catch (error: any) {
+      if (error.response) {
+        // Assuming the backend provides specific error messages for username or email already existing
+        const errorData = error.response.data;
+
+        if (errorData.username) {
+          setAlertType("username");
+          setErrorMessage(
+            "The username you entered is already in use. Please choose a different username."
+          );
+        } else if (errorData.email) {
+          setAlertType("email");
+          setErrorMessage(
+            "The email address you entered is already associated with another account. Please try logging in or use a different email."
+          );
+        } else {
+          setErrorMessage("An unknown error occurred. Please try again.");
+        }
+      } else if (error.request) {
+        message.error("No response from the server.");
+      } else {
+        message.error("An unexpected error occurred.");
+      }
+    }
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -92,6 +135,18 @@ const RegisterPage: React.FC = () => {
         <Flex justify="space-between">
           <img alt="avatar" src={image1} className={styles.imgStyle} />
           <Flex vertical className={styles.form}>
+            {errorMessage && (
+              <Alert
+                message={
+                  alertType === "username"
+                    ? "Username Already Taken"
+                    : "Email Address Already Registered"
+                }
+                description={errorMessage}
+                type="error"
+                showIcon
+              />
+            )}
             <Title level={3}>Register Yout Account</Title>
             <Text className={styles.welcomeText}>
               Let's get you set up and ready to go🚀
@@ -165,7 +220,7 @@ const RegisterPage: React.FC = () => {
               </Form.Item>
               <Form.Item
                 label="Confirm Password: "
-                name="confrm_password"
+                name="confirm_password"
                 required
                 rules={[
                   { message: "Please confirm your password!", required: true },
