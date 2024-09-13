@@ -13,8 +13,8 @@ import {
   message,
 } from "antd";
 import axios from "axios";
-import { Link as RouterLink } from "react-router-dom";
-import image1 from "../../assets/register_cover.png";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import image1 from "../../assets/images/register_cover.png";
 import { UserAddOutlined } from "@ant-design/icons";
 import {
   loadForbiddenPasswords,
@@ -32,6 +32,7 @@ interface FormValues {
 }
 
 const RegisterPage: React.FC = () => {
+  const navigate = useNavigate()
   const [form] = Form.useForm<FormValues>();
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [alertType, setAlertType] = React.useState<"username" | "email" | null>(
@@ -86,7 +87,6 @@ const RegisterPage: React.FC = () => {
   };
 
   const onFinish = async (values: FormValues) => {
-    console.log(values.confirm_password);
     try {
       const response = await axios.post("http://127.0.0.1:8000/auth/users/", {
         username: values.username,
@@ -96,6 +96,7 @@ const RegisterPage: React.FC = () => {
       });
       console.log("Response Data: ", response.data);
       setErrorMessage(null); // Reset error if successful
+      navigate('/login')
     } catch (error: any) {
       if (error.response) {
         // Assuming the backend provides specific error messages for username or email already existing
@@ -147,7 +148,7 @@ const RegisterPage: React.FC = () => {
                 showIcon
               />
             )}
-            <Title level={3}>Register Yout Account</Title>
+            <Title level={3}>Register Your Account</Title>
             <Text className={styles.welcomeText}>
               Let's get you set up and ready to go🚀
             </Text>
@@ -188,7 +189,7 @@ const RegisterPage: React.FC = () => {
                 name="email"
                 rules={[
                   { message: "Enter a valid email", type: "email" },
-                  { message: "Please input ur email!", required: true },
+                  { message: "Please input your email!", required: true },
                 ]}
               >
                 <Input variant="filled" placeholder="your@email.com" />

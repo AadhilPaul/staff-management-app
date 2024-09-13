@@ -1,18 +1,25 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../utils/axios";
 import styles from "./LoginPage.module.css";
 import {
   Card,
   Button,
+  Alert,
   Divider,
   Typography,
   Flex,
   Form,
   Checkbox,
   Input,
+  message,
 } from "antd";
 import { Link as RouterLink } from "react-router-dom";
 import type { FormProps } from "antd";
-import { GoogleOutlined, LoginOutlined } from "@ant-design/icons";
+import {
+  GoogleOutlined,
+  LoginOutlined,
+} from "@ant-design/icons";
 
 const { Title, Text, Link } = Typography;
 
@@ -21,15 +28,38 @@ type FieldType = {
   password?: string;
 };
 
-const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-  console.log("Success", values);
-};
-
-const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (values) => {
-  console.log("Success", values);
-};
-
 const LoginPage: React.FC = () => {
+  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+
+  const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
+    axiosInstance
+      .post("auth/jwt/create", {
+        email: values.email,
+        password: values.password,
+      })
+      .then((res) => {
+        localStorage.setItem("access_token", res.data.access);
+        localStorage.setItem("refresh_token", res.data.refresh);
+        axiosInstance.defaults.headers["Authorization"] =
+          "Bearer " + localStorage.getItem("access_token");
+        navigate("/");
+      })
+      .catch((error) => {
+        if (error.response.status != 200) {
+          setErrorMessage("Invalid Username or Password");
+        }
+        else if (error.request) {
+          message.error("No response from the server.")
+        } else {
+          message.error("An unexpected error occured.")
+        }
+      });
+  };
+
+  const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (values) => {
+    console.log("Failed", values);
+  };
   return (
     <div className={styles.container}>
       <Card bordered={true} className={styles.card}>
@@ -46,6 +76,16 @@ const LoginPage: React.FC = () => {
         <Divider>
           <Text className={styles.helperText}>or sign in with email</Text>
         </Divider>
+        {errorMessage && (
+          <Alert
+            message="Invalid Username or Password"
+            type="error"
+            showIcon
+            closable
+            style={{marginBottom: "2rem"}}
+            onClose={() => setErrorMessage(null)}
+          />
+        )}
         <Form
           layout="vertical"
           onFinish={onFinish}
@@ -55,7 +95,10 @@ const LoginPage: React.FC = () => {
           <Form.Item<FieldType>
             label="Email: "
             name="email"
-            rules={[{ message: "Please input your email!", type: "email" }]}
+            rules={[
+              { message: "Enter a valid email", type: "email" },
+              { message: "Please input your email!", required: true },
+            ]}
           >
             <Input variant="filled" placeholder="your@email.com" />
           </Form.Item>
@@ -63,7 +106,7 @@ const LoginPage: React.FC = () => {
           <Form.Item<FieldType>
             label="Password: "
             name="password"
-            rules={[{ message: "Please input your password!" }]}
+            rules={[{ message: "Please input your password!", required: true }]}
           >
             <Input.Password
               variant="filled"

@@ -1,0 +1,12 @@
+@font-face {
+    font-family: 'NovaRegular';
+    src: url('/src/assets/fonts/nova-regular.TTF') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+* {
+    font-family: 'NovaRegular', sans-serif;
+}
+.ant-typography {
+    font-family: 'NovaRegular', sans-serif;
+}
