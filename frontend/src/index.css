@@ -6,6 +6,7 @@
 }
 * {
     font-family: 'NovaRegular', sans-serif;
+    margin: 0;
 }
 .ant-typography {
     font-family: 'NovaRegular', sans-serif;

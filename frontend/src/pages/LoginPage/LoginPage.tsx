@@ -42,7 +42,7 @@ const LoginPage: React.FC = () => {
       });
 
       localStorage.setItem("access_token", response.data.access);
-      localStorage.setItem("refresh_token", response.data.rerfresh);
+      localStorage.setItem("refresh_token", response.data.refresh);
       axiosInstance.defaults.headers["Authorization"] = "Bearer " + localStorage.getItem('access_token')
       navigate("/login");
     } catch (error: any) {

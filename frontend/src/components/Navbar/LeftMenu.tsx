@@ -1,9 +1,9 @@
 import { Menu } from "antd";
 import { Link } from "react-router-dom";
 
-const LeftMenu: React.FC<{ mode: any }> = ({ mode }) => {
+const LeftMenu: React.FC= () => {
   return (
-    <Menu mode={mode}>
+    <Menu mode="horizontal">
       <Menu.Item key="dashboard"><Link to='/'>Dashboard</Link></Menu.Item>
       <Menu.Item key="notifications"><Link to='/notifications'>Notifications</Link></Menu.Item>
       <Menu.Item key="deadlines"><Link to='/deadlines'>Deadlines</Link></Menu.Item>

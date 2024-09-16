@@ -3,7 +3,7 @@ import { Empty, Typography } from "antd";
 import { Link as RouterLink } from "react-router-dom";
 import AppBar from "../components/Navbar/AppBar";
 
-const { Text, Link } = Typography;
+const { Link } = Typography;
 
 const ErrorPage: React.FC<{ content?: string | null }> = ({ content }) => {
   return (
@@ -11,13 +11,13 @@ const ErrorPage: React.FC<{ content?: string | null }> = ({ content }) => {
       <AppBar />
       <div
         style={{
-          textAlign: "center",
-          padding: "50px",
-          height: "70vh",
+          height: "80vh",
+          paddingBottom: "10rem",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "column",
+          backgroundColor: "#f0f2f5",
         }}
       >
         <Empty />

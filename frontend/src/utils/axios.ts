@@ -30,10 +30,10 @@ axiosInstance.interceptors.response.use(
 
     if (
       error.response.status === 401 &&
-      originalRequest.url === baseURL + "users/token/refresh/"
+      originalRequest.url === baseURL + "token/jwt/refresh/"
     ) {
       localStorage.clear();
-      window.location.href = "/login/";
+      window.location.href = "/login";
       return Promise.reject(error);
     }
 
@@ -49,12 +49,12 @@ axiosInstance.interceptors.response.use(
 
         // exp date in token is expressed in seconds, while now() returns milliseconds:
         const now = Math.ceil(Date.now() / 1000);
-        console.log(tokenParts.exp);
+        console.log(`expiring time ${tokenParts.exp} is past ${now}`);
 
         if (tokenParts.exp > now) {
           console.log("ITS EXPIRED!");
           return axiosInstance
-            .post("users/token/refresh/", {
+            .post("auth/jwt/refresh/", {
               refresh: refreshToken,
             })
             .then((response) => {
@@ -66,6 +66,8 @@ axiosInstance.interceptors.response.use(
               originalRequest.headers["Authorization"] =
                 "Bearer " + response.data.access;
 
+              console.log("access token request successfull!")
+
               return axiosInstance(originalRequest);
             })
             .catch((err) => {
@@ -74,12 +76,12 @@ axiosInstance.interceptors.response.use(
         } else {
           localStorage.clear();
           console.log("Refresh token is expired", tokenParts.exp, now);
-          window.location.href = "/login/";
+          window.location.href = "login/";
         }
       } else {
         localStorage.clear();
         console.log("Refresh token not available.");
-        window.location.href = "/login/";
+        window.location.href = "login/";
       }
     }
 
