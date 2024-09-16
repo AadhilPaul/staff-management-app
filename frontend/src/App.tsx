@@ -1,8 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import React from "react";
 import LoginPage from "./pages/LoginPage/LoginPage";
-import RegisterPage from './pages/RegisterPage/RegisterPage'
+import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import ErrorPage from "./pages/ErrorPage";
+import Dashboard from "./pages/Dashboard";
+import { isAuthenticated } from "./utils/authenticated";
 
 const router = createBrowserRouter([
   {
@@ -12,6 +14,26 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <RegisterPage />,
+  },
+  {
+    path: "/",
+    element: isAuthenticated() ? (
+      <Dashboard />
+    ) : (
+      <ErrorPage content="Dashboard" />
+    ),
+  },
+  {
+    path: "/notifications",
+    element: <ErrorPage content="Notifications" />,
+  },
+  {
+    path: "/deadlines",
+    element: <ErrorPage content="Deadlines" />,
+  },
+  {
+    path: "/apply-for-loa",
+    element: <ErrorPage content="Application for Leave of absence" />,
   },
   {
     path: "*",

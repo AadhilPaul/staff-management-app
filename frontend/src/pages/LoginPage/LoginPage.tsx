@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
 import styles from "./LoginPage.module.css";
@@ -16,10 +16,8 @@ import {
 } from "antd";
 import { Link as RouterLink } from "react-router-dom";
 import type { FormProps } from "antd";
-import {
-  GoogleOutlined,
-  LoginOutlined,
-} from "@ant-design/icons";
+import { GoogleOutlined, LoginOutlined } from "@ant-design/icons";
+import { isAuthenticated } from "../../utils/authenticated";
 
 const { Title, Text, Link } = Typography;
 
@@ -32,29 +30,31 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
-  const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-    axiosInstance
-      .post("auth/jwt/create", {
+  useEffect(() => {
+    if (isAuthenticated()) navigate('/')
+  })
+
+  const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
+    try {
+      const response = await axiosInstance.post("auth/jwt/create", {
         email: values.email,
         password: values.password,
-      })
-      .then((res) => {
-        localStorage.setItem("access_token", res.data.access);
-        localStorage.setItem("refresh_token", res.data.refresh);
-        axiosInstance.defaults.headers["Authorization"] =
-          "Bearer " + localStorage.getItem("access_token");
-        navigate("/");
-      })
-      .catch((error) => {
-        if (error.response.status != 200) {
-          setErrorMessage("Invalid Username or Password");
-        }
-        else if (error.request) {
-          message.error("No response from the server.")
-        } else {
-          message.error("An unexpected error occured.")
-        }
       });
+
+      localStorage.setItem("access_token", response.data.access);
+      localStorage.setItem("refresh_token", response.data.rerfresh);
+      axiosInstance.defaults.headers["Authorization"] = "Bearer " + localStorage.getItem('access_token')
+      navigate("/login");
+    } catch (error: any) {
+      if (error.response) {
+        if (error.response.status != 200)
+          setErrorMessage("Invalid Username or Password")
+      } else if (error.request) {
+        message.error("No response from server.")
+      } else {
+        message.error("An unexpected error occured.")
+      }
+    }
   };
 
   const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (values) => {
@@ -82,7 +82,7 @@ const LoginPage: React.FC = () => {
             type="error"
             showIcon
             closable
-            style={{marginBottom: "2rem"}}
+            style={{ marginBottom: "2rem" }}
             onClose={() => setErrorMessage(null)}
           />
         )}

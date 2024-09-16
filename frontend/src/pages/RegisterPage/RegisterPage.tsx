@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./RegsiterPage.module.css";
 import {
   Card,
@@ -21,6 +21,7 @@ import {
   calculateSimilarity,
 } from "../../utils/validation";
 import { RuleObject } from "antd/es/form";
+import { isAuthenticated } from "../../utils/authenticated";
 
 const { Title, Text, Link } = Typography;
 
@@ -41,6 +42,10 @@ const RegisterPage: React.FC = () => {
 
   const usernameValidationRegex = /^[\w.@+-]+$/;
   const passwordValidationRegex = /^(?=.*\d).+$/;
+
+  useEffect(() => {
+    if (isAuthenticated()) navigate('/')
+  })
 
   const validatePassword = async (_: RuleObject, value: string) => {
     const forbiddenPasswords = await loadForbiddenPasswords();
