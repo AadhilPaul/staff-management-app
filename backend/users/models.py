@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import RegexValidator
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
@@ -37,11 +38,23 @@ class CustomAccountManager(BaseUserManager):
 
 
 class MyUser(AbstractBaseUser, PermissionsMixin):
+    ROLE_CHOICES = (
+        ('admin', 'Admin'),
+        ('employee', 'Employee')
+    )
+    phone_number_validator = RegexValidator(
+        regex=r'^\+?\d{9,15}$',
+        message="Phone number must be in the format: '+999999999'. Up to 15 digits allowed."
+    )
+
     email = models.EmailField(_('email_address'), unique=True)
     username = models.CharField(max_length=150, unique=True)
     start_date = models.DateTimeField(default=timezone.now)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="employee")
+    phone_number = models.CharField(max_length=17, validators=[phone_number_validator], blank=True, null=True)
+    profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
 
     USERNAME_FIELD = 'email'

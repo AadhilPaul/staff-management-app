@@ -8,9 +8,12 @@ import { useNavigate } from "react-router-dom";
 const RightMenu: React.FC = () => {
   const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState<{
+    id: number;
     username: string;
     email: string;
-    id: number;
+    role: string;
+    phone_number: string;
+    profile_pic: string;
   } | null>(null);
 
   useEffect(() => {
@@ -31,7 +34,7 @@ const RightMenu: React.FC = () => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         axiosInstance.defaults.headers["Authorization"] = null;
-        navigate('/login')
+        navigate("/login");
       })
       .catch((error) => {
         console.error("Logout error:", error);
@@ -41,7 +44,7 @@ const RightMenu: React.FC = () => {
 
   return (
     <Menu
-      style={{ width: "10rem" }}
+      style={{ width: "10rem", padding: "0" }}
       mode="inline"
       items={[
         {
