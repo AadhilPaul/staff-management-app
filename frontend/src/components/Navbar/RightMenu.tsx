@@ -42,6 +42,10 @@ const RightMenu: React.FC = () => {
       });
   };
 
+  const goProfile = () => {
+    navigate('/profile')
+  }
+
   return (
     <Menu
       style={{ width: "10rem", padding: "0" }}
@@ -56,7 +60,7 @@ const RightMenu: React.FC = () => {
               key: "g1",
               type: "group",
               children: [
-                { icon: <UserOutlined />, key: "1", label: "Profile" },
+                { icon: <UserOutlined />, key: "1", label: "Profile", onClick: goProfile },
                 { icon: <CodeOutlined />, key: "2", label: "Settings" },
                 {
                   icon: <LogoutOutlined />,

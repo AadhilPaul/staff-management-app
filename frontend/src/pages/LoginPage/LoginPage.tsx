@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../utils/axios";
+import axios from "axios";
 import styles from "./LoginPage.module.css";
 import {
   Card,
@@ -36,14 +36,13 @@ const LoginPage: React.FC = () => {
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     try {
-      const response = await axiosInstance.post("auth/jwt/create", {
+      const response = await axios.post("http://127.0.0.1:8000/auth/jwt/create/", {
         email: values.email,
         password: values.password,
       });
 
       localStorage.setItem("access_token", response.data.access);
       localStorage.setItem("refresh_token", response.data.refresh);
-      axiosInstance.defaults.headers["Authorization"] = "Bearer " + localStorage.getItem('access_token')
       navigate("/login");
     } catch (error: any) {
       if (error.response) {

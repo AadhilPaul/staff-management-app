@@ -5,7 +5,6 @@ import LeftMenu from "./LeftMenu";
 import RightMenu from "./RightMenu";
 import { Link } from "react-router-dom";
 import { isAuthenticated } from "../../utils/authenticated";
-import displayUserDetails from "../../utils/user-details";
 
 
 const AppBar: React.FC = ({}) => {

@@ -54,7 +54,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="employee")
     phone_number = models.CharField(max_length=17, validators=[phone_number_validator], blank=True, null=True)
-    profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    profile_pic = models.ImageField(upload_to='profile_pics/', default="default.jpg", blank=True, null=True)
 
 
     USERNAME_FIELD = 'email'

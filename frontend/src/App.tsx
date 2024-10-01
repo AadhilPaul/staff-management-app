@@ -5,6 +5,7 @@ import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import ErrorPage from "./pages/ErrorPage";
 import Dashboard from "./pages/Dashboard";
 import { isAuthenticated } from "./utils/authenticated";
+import Profile from "./pages/ProfilePage/Profile";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
   {
     path: "/apply-for-loa",
     element: <ErrorPage content="Application for Leave of absence" />,
+  },
+  {
+    path: "/profile",
+    element: <Profile/>
   },
   {
     path: "*",
